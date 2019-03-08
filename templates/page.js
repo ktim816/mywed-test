@@ -1,0 +1,10 @@
+module.exports = pageName => `
+extends ../../layouts/default
+
+block head
+  - var pageTitle = '${pageName} Page'
+
+block content
+  +b.${pageName}
+
+`;

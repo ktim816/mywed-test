@@ -1,0 +1,48 @@
+.section {
+  display: block;
+
+  $this: &;
+
+  &__content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+
+  &__note {
+    font-size: 18px;
+    text-align: center;
+    opacity: .5;
+  }
+
+  &--filters {
+    padding: 80px 0;
+    border-bottom: 1px solid $color-border;
+
+    @include screen('sm-s', max) {
+      padding: 60px 0;
+    }
+
+    #{$this}__content {
+      margin-bottom: -15px;
+    }
+
+    .inputbox {
+      width: 100%;
+      max-width: 290px;
+      margin-left: 15px;
+      margin-right: 15px;
+      margin-bottom: 15px;
+    }
+  }
+
+  &--photos {
+    padding: 60px 0;
+
+    #{$this}__content {
+      margin-bottom: -30px;
+    }
+  }
+}

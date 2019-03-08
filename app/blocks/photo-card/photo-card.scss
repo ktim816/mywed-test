@@ -1,0 +1,96 @@
+.photo-card {
+  // display: none;
+  width: 100%;
+  max-width: 320px;
+  padding: 0 15px;
+  margin-bottom: 30px;
+
+  $this: &;
+
+  &.is-visible {
+    display: block;
+  }
+
+  .hl {
+    background-color: $color-main;
+    color: $color-light;
+  }
+
+  &__content {
+    position: relative;
+    border: 1px solid $color-border;
+
+    &:hover {
+
+      #{$this}__icon-button {
+        transform: scale(1);
+      }
+    }
+  }
+
+  &__icon-button > * {
+    pointer-events: none;
+  }
+
+  &__icon-button {
+    @include size(40px);
+
+    position: absolute;
+    z-index: 1;
+    top: 10px;
+    right: 10px;
+    background-color: $color-light;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 0 15px 1px rgba(0, 0, 0, .1);
+    transform: scale(0);
+    transition: transform $ease-main;
+  }
+
+  &__icon {
+    @include size(20px);
+    @include center-block;
+
+    fill: $color-basic;
+  }
+
+  &__img-block {
+    @include ratio(16, 16);
+
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  &__img {
+    @include fill-img;
+
+    cursor: pointer;
+    transition: transform .5s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  &__info {
+    padding: 9.43% 7%;
+  }
+
+  &__name,
+  &__city {
+    font-size: 16px;
+
+    span:not(:last-child):not(.hl) {
+      font-weight: 700;
+    }
+
+    @include screen('xs-s', max) {
+      font-size: 15px;
+    }
+  }
+
+  &__name {
+    margin-bottom: 10px;
+  }
+}
