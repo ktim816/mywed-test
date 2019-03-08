@@ -1,3 +1,3 @@
-# Тестовое задание от Redsoft
+# Тестовое задание от Mywed
 
-https://ktim816.github.io/redsoft-test/
+https://ktim816.github.io/mywed-test/
