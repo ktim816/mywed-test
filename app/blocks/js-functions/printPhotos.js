@@ -1,12 +1,25 @@
 /* eslint-disable */
-import photosDataBase from '../../data/photos_db';
+import photoDataBase from '../../data/photos_db.json';
 
 export default function printPhotos() {
-  // Classes
+  // -- Classes --
   class Photos {
-    constructor(dataBase) {
+    constructor(dataBase, cards, names, cities, images, field, select, section, note) {
       this.dataBase = dataBase;
+      this.cards = Array.from(document.querySelectorAll(cards));
+      this.names = Array.from(document.querySelectorAll(names));
+      this.cities = Array.from(document.querySelectorAll(cities));
+      this.images = Array.from(document.querySelectorAll(images));
+      this.field = document.querySelector(field);
+      this.select = document.querySelector(select);
+      this.section = document.querySelector(section);
+      this.note = document.querySelector(note);
+      this.idArray = JSON.parse(localStorage.getItem('photoId')) || [];
       this.imagePath = './assets/images/';
+    }
+
+    getIdData() {
+      return this.dataBase.map(obj => obj.id);
     }
 
     getNamesData() {
@@ -19,110 +32,114 @@ export default function printPhotos() {
 
     getImagesData(dpr = '') {
       return this.dataBase
-        .map(obj => `${this.imagePath}${obj.src.split('.')[0]}${dpr}.${obj.src.split('.')[1]}`);
+      .map(obj => `${this.imagePath}${obj.src.split('.')[0]}${dpr}.${obj.src.split('.')[1]}`);
     }
 
-    getIdData() {
-      return this.dataBase.map(obj => obj.id);
+    getCards() {
+      return this.cards;
+    }
+
+    getNames() {
+      return this.names;
+    }
+
+    getCities() {
+      return this.cities;
+    }
+
+    getFilteredCities() {
+      return [...new Set(this.getCitiesData())];
+    }
+
+    getImages() {
+      return this.images;
+    }
+
+    getField() {
+      return this.field;
+    }
+
+    getSelect() {
+      return this.select;
+    }
+
+    getSection() {
+      return this.section;
+    }
+
+    getNote() {
+      return this.note;
     }
   }
 
-  // Variables
-  const photoCards = Array.from(document.querySelectorAll('.js-card'));
-  const photoCities = Array.from(document.querySelectorAll('.js-city'));
-  const fieldName = document.querySelector('.js-input-name');
-  const photoSection = document.querySelector('.js-photos-section');
-  const selectCity = document.querySelector('.js-select-city');
-  const photos = new Photos(photosDataBase);
-  const idArray = JSON.parse(localStorage.getItem('photoId')) || [];
-  const filteredCities = [...new Set(photos.getCitiesData())];
-  const photoNames = [];
+  // -- Variables --
+  const photos = new Photos(photoDataBase, '.js-card', '.js-name', '.js-city', '.js-image', '.js-input-name', '.js-select-city', '.js-photos-section', '.js-no-matches');
 
-  // Functions
-  function initCityOptions() {
-    for (let i = 0; i < filteredCities.length; i++) {
+  // -- Functions --
+
+  // Initialize select options
+  (function initCityOptions() {
+    for (let i = 0; i < photos.getFilteredCities().length; i++) {
       const option = document.createElement('option');
-      option.text = filteredCities[i];
-      selectCity.add(option);
+      option.text = photos.getFilteredCities()[i];
+      photos.getSelect().add(option);
     }
-  }
-  initCityOptions();
-
-  // Отображаем сопоставления по городам
-  function displayCityMatches() {
-    console.log(photoCities);
-  }
+  })();
 
   // Добавляем элемент в локальное хранилище
   function addToLocalStorage(e) {
-    const photoCards = this.querySelectorAll('.js-card');
-    photoCards.forEach(card => {
+    photos.getCards().map(card => {
       const invisibleIcon = card.querySelector('.js-invisible');
-      if (e.target === invisibleIcon && !idArray.includes(card.dataset.id)) {
-        idArray.push(card.dataset.id);
-        localStorage.setItem('photoId', JSON.stringify(idArray));
+      if (e.target === invisibleIcon && !photos.idArray.includes(card.id)) {
+        photos.idArray.push(card.id);
+        localStorage.setItem('photoId', JSON.stringify(photos.idArray));
         card.style.display = 'none';
       }
     });
   }
 
-  // Находим сопоставления
-  function findMatches(wordToMatch, words) {
-    return words.filter((word) => {
-      const regex = new RegExp(wordToMatch, 'gi');
-      return word.match(regex);
+  // Проверяем, есть ли элемент в локальном хранилище
+  function checkIfInLocalStorage() {
+    photos.getCards().map(card => {
+      if (photos.idArray.includes(card.id)) card.style.display = 'none';
     });
   }
 
-  // Отображаем сопоставления по именам
-  function displayNameMatches() {
-    const matchArray = findMatches(fieldName.value, photos.getNamesData());
-    const html = matchArray.map((name, i) => {
-      const regex = new RegExp(fieldName.value, 'gi');
-      const photoName = name.replace(regex, `<span class="hl">${fieldName.value}</span>`);
-
-      return `
-        <div class="photo-card js-card" data-id="${photos.getIdData()[i]}" data-show="">
-            <div class="photo-card__content">
-              <button class="photo-card__icon-button js-invisible" title="Больше не показывать">
-                <svg class="photo-card__icon">
-                  <use xlink:href="assets/images/icon.svg#icon_invisible"></use>
-                </svg>
-              </button>
-              <div class="photo-card__img-block">
-                <img class="photo-card__img js-image" src="${photos.getImagesData()[i]}" srcset="${photos.getImagesData('@2x')[i]} 2x, ${photos.getImagesData('@3x')[i]} 3x" alt="Свадебное фото" role="presentation" />
-              </div>
-              <div class="photo-card__info">
-                <div class="photo-card__name">
-                <span>Фотограф:&nbsp;</span>
-                <span class="js-name">${photoName}</span>
-              </div>
-              <div class="photo-card__city">
-                <span>Город:&nbsp;</span>
-                <span class="js-city">${photos.getCitiesData()[i]}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    photoSection.innerHTML = html;
+  // Отображаем сопоставления
+  function displayMatches() {
+    photos.getCards().map(card => {
+      const photoName = card.querySelector('.js-name');
+      const photoCity = card.querySelector('.js-city');
+      if ((photos.getField().value.length !== 0) && (!photoName.innerHTML.includes(photos.getField().value)) || (photos.getSelect().options[0].innerHTML !== photoCity.innerHTML) && (photos.getFilteredCities().includes(photos.getSelect().options[0].innerHTML))) {
+        card.classList.add('is-hidden');
+      } else {
+        card.classList.remove('is-hidden');
+      }
+    });
   }
 
   // Если совпадений нет, выводим сообщение
   function checkIfNoMatches() {
-    if (photoSection.children.length === 0) {
-      photoSection.innerHTML = `
-        <div class="section__note">Сопоставлений не найдено</div>
-      `;
+    if (photos.getCards().every(card => card.classList.contains('is-hidden'))) {
+      photos.getNote().classList.add('is-visible');
+    } else {
+      photos.getNote().classList.remove('is-visible');
     }
   }
 
-  // Event listeners
-  photoSection.addEventListener('click', addToLocalStorage);
-  window.addEventListener('load', displayNameMatches);
-  fieldName.addEventListener('input', displayNameMatches);
-  fieldName.addEventListener('keyup', checkIfNoMatches);
+  // Добавляем картинки в srcset
+  function addToSourceSet() {
+    photos.getImages().map((image, i) => {
+      image.srcset = `${photos.getImagesData('@2x')[i]} 2x, ${photos.getImagesData('@3x')[i]} 3x`;
+    });
+  }
+
+  // -- Event listeners --
+  window.addEventListener('load', checkIfInLocalStorage);
+  window.addEventListener('load', addToSourceSet);
+  photos.getSection().addEventListener('click', addToLocalStorage);
+  photos.getField().addEventListener('input', displayMatches);
+  photos.getSelect().addEventListener('change', displayMatches);
+  photos.getField().addEventListener('input', checkIfNoMatches);
 }
 /* eslint-enable */

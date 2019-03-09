@@ -1,5 +1,5 @@
 .photo-card {
-  // display: none;
+  display: block;
   width: 100%;
   max-width: 320px;
   padding: 0 15px;
@@ -7,8 +7,8 @@
 
   $this: &;
 
-  &.is-visible {
-    display: block;
+  &.is-hidden {
+    display: none;
   }
 
   .hl {

@@ -4,6 +4,7 @@ block head
   - var pageTitle = 'MyWed - Test'
 
 block content
+  - var photoDataBase = getData('photos_db')
   main.main-content
     +section.--filters
       +section-content
@@ -14,5 +15,7 @@ block content
             option(placeholder) Выберите город
     +section.--photos
       +section-content.js-photos-section
-
+        each photo in photoDataBase
+          +photo-card(photo.id, photo.src, photo.name, photo.city)
+        +section-note.js-no-matches Сопоставлений не найдено
   +popup.js-popup

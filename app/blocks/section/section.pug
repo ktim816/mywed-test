@@ -22,6 +22,10 @@ mixin section-title(tag)
   +e(tag || 'h2').title&attributes(attributes)
     block
 
+mixin section-note()
+  +e.note&attributes(attributes)
+    block
+
 mixin section-description()
   +e.P.description&attributes(attributes)
     block

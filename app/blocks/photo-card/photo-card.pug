@@ -1,15 +1,16 @@
-mixin photo-card()
-  +b.photo-card&attributes(attributes)(data-id='').js-card
+mixin photo-card(id, src, name, city)
+  - var imagePath = './assets/images/'
+  +b.photo-card(id= id)&attributes(attributes).js-card
     +e.content
       +e.BUTTON(title='Больше не показывать').icon-button.js-invisible
         +icon('invisible').icon
       +e.img-block
-        +e.IMG(src='').img.js-image
+        +e.IMG(src= imagePath + src).img.js-image
       +e.info
         +e.name
           span Фотограф:&nbsp;
-          span.js-name
+          span.js-name!= name
         +e.city
           span Город:&nbsp;
-          span.js-city
+          span.js-city!= city
     block
